@@ -5,7 +5,7 @@
                 <div class="card-body">
                     <h4>Sign Up</h4>
                     <hr/>
-                    <form action="">
+                    <form onsubmit="onRegistration(event)">
                         <div class="container-fluid m-0 p-0">
                             <div class="row m-0 p-0">
                                 <div class="col-md-4 p-2">
@@ -31,7 +31,7 @@
                             </div>
                             <div class="row m-0 p-0">
                                 <div class="col-md-4 p-2">
-                                    <button onclick="onRegistration()" class="btn mt-3 w-100  bg-gradient-primary">Complete</button>
+                                    <button type="submit" class="btn mt-3 w-100  bg-gradient-primary">Complete</button>
                                 </div>
                             </div>
                         </div>
@@ -45,7 +45,8 @@
 <script>
 
 
-  async function onRegistration() {
+async function onRegistration(event) {
+        event.preventDefault();
 
         let email = document.getElementById('email').value;
         let firstName = document.getElementById('firstName').value;
@@ -78,7 +79,7 @@
                 password:password
             })
             hideLoader();
-            if(res.status===200 && res.data['status']==='success'){
+            if(res.status === 201 && res.data['status']==='success'){
                 successToast(res.data['message']);
                 setTimeout(function (){
                     window.location.href='/userLogin'
