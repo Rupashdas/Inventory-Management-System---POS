@@ -151,7 +151,6 @@ class UserController extends Controller
         }
         $fullName = $user->firstName . ' ' . $user->lastName;
         Mail::to($email)->send(new OTPMail($fullName, $otp));
-        // update OTP in users table
         $user->otp = $otp;
         $user->save();
 
@@ -159,6 +158,56 @@ class UserController extends Controller
             'message' => 'OTP sent successfully',
             'status' => "success",
         ], 200);
+    }
+
+    function verifyOTPCode(Request $request){
+        $email = $request->input('email');
+        $otp = $request->input('otp');
+        $count = User::where('email', $email)->where('otp', $otp)->count();
+        if(1 === $count){
+            // Database OTP reset
+            $user = User::where('email', $email)->first();
+            $user->otp = "0";
+            $user->save();
+            $token = JWTToken::createTokenForSetPassword($email);
+            return response()->json([
+                'message' => 'OTP verified successfully',
+                'status' => "success",
+                'token' => $token,
+            ], 200);
+        }else{
+            return response()->json([
+                'message' => 'Invalid OTP',
+                'status' => "failed",
+            ], 401);
+        }
+    }
+
+    public function resetPassword(Request $request){
+        try{
+            $email = $request->header('userEmail');
+            $newPassword = $request->input('newPassword');
+            $user = User::where('email', $email)->first();
+            if(!$user){
+                return response()->json([
+                    'message' => 'User not found',
+                    'status' => "failed",
+                ], 404);
+            }
+            $user->password = Hash::make($newPassword);
+            $user->save();
+
+            return response()->json([
+                'message' => 'Password reset successfully',
+                'status' => "success",
+            ], 200);
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'Password reset failed',
+                'status' => "failed",
+            ], 500);
+        }
+        
     }
 
 
