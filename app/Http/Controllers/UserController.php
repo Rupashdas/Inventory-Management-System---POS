@@ -14,6 +14,22 @@ use App\Mail\OTPMail;
 class UserController extends Controller
 {
 
+    public function loginPage(){
+        return view('pages.auth.login-page');
+    }
+    public function registrationPage(){
+        return view('pages.auth.registration-page');
+    }
+    public function sendOtpPage(){
+        return view('pages.auth.send-otp-page');
+    }
+    public function verifyOtpPage(){
+        return view('pages.auth.verify-otp-page');
+    }
+    public function resetPasswordPage(){
+        return view('pages.auth.reset-pass-page');
+    }
+
     /*
     * User registration
     */
@@ -53,8 +69,6 @@ class UserController extends Controller
                 'status' => "success",
             ], 201);
         } catch(Exception $e){
-            // log error message
-            \Log::error('User Registration Error: '.$e->getMessage());
             return response()->json([
                 'message' => 'Registration failed',
                 'status' => "failed",
@@ -69,6 +83,30 @@ class UserController extends Controller
     */
     public function userLogin(Request $request){
         try{
+
+            $email = $request->input('email');
+            $password = $request->input('password');
+            $user = User::where('email', $email)->first();
+            $count = 0;
+            
+            if ($user && Hash::check($password, $user->password)) {
+                $count = 1;
+            }
+
+            if($count == 1){
+                $token = JWTToken::createToken($email);
+                return response()->json([
+                    'message' => 'Login successful',
+                    'status' => "success",
+                ], 200)->cookie('pos_token', $token, 60*24);
+            }else{
+                return response()->json([
+                    'message' => 'Email or Password is incorrect',
+                    'status' => "failed",
+                ], 401);
+            }
+
+
             // // Validation rules
             // $validator = Validator::make($request->all(), [
             //     'email' => 'required|string|email',
@@ -104,27 +142,7 @@ class UserController extends Controller
             //     'token' => $token,
             // ], 200);
 
-           
-            $user = User::where('email', $request->input('email'))->first();
-            if ($user && Hash::check($request->password, $user->password)) {
-                $count = 1;
-            } else {
-                $count = 0;
-            }
-
-            if($count == 1){
-                $token = JWTToken::createToken($request->input('email'));
-                return response()->json([
-                    'message' => 'Login successful',
-                    'status' => "success",
-                    'token' => $token,
-                ], 200);
-            }else{
-                return response()->json([
-                    'message' => 'Unauthorized access',
-                    'status' => "failed",
-                ], 401);
-            }
+            
         } catch(Exception $e){
             // log error message
             \Log::error('User Login Error: '.$e->getMessage());

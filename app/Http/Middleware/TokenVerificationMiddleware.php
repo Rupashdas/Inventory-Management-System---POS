@@ -22,7 +22,6 @@ class TokenVerificationMiddleware
             return response()->json([
                 'message' => 'Unauthorized access',
                 'status' => "failed",
-                'token' => $token,
             ], 401);
         }else{
             $request->headers->set('userEmail', $result);
