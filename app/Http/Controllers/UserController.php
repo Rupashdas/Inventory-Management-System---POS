@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Exception;
 use \App\Helper\JWTToken;
+use Mail;
+use App\Mail\OTPMail;
 
 class UserController extends Controller
 {
@@ -109,7 +111,7 @@ class UserController extends Controller
             } else {
                 $count = 0;
             }
-            
+
             if($count == 1){
                 $token = JWTToken::createToken($request->input('email'));
                 return response()->json([
@@ -121,8 +123,6 @@ class UserController extends Controller
                 return response()->json([
                     'message' => 'Unauthorized access',
                     'status' => "failed",
-                    'db_pass' => Hash::make($request->input('password')),
-                    'req_pass' => $request->input('password')
                 ], 401);
             }
         } catch(Exception $e){
@@ -135,4 +135,31 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+    /*
+    * Send OTP Code
+    */
+    public function sendOTPCode(Request $request){
+        $email = $request->input('email');
+        $otp = rand(1000, 9999);
+        $user = User::where('email', $email)->first();
+        if(!$user){
+            return response()->json([
+                'message' => 'Email not found',
+                'status' => "failed",
+            ], 404);
+        }
+        $fullName = $user->firstName . ' ' . $user->lastName;
+        Mail::to($email)->send(new OTPMail($fullName, $otp));
+        // update OTP in users table
+        $user->otp = $otp;
+        $user->save();
+
+        return response()->json([
+            'message' => 'OTP sent successfully',
+            'status' => "success",
+        ], 200);
+    }
+
+
 }
