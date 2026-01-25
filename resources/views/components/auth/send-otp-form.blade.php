@@ -5,10 +5,12 @@
                 <div class="card-body">
                     <h4>EMAIL ADDRESS</h4>
                     <br/>
-                    <label>Your email address</label>
-                    <input id="email" placeholder="User Email" class="form-control" type="email"/>
-                    <br/>
-                    <button onclick="VerifyEmail()"  class="btn w-100 float-end bg-gradient-primary">Next</button>
+                    <form onsubmit="VerifyEmail(event)">
+                        <label>Your email address</label>
+                        <input id="email" placeholder="User Email" class="form-control" type="email"/>
+                        <br/>
+                        <button type="submit" class="btn w-100 float-end bg-gradient-primary">Next</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -16,13 +18,16 @@
 </div>
 
 <script>
-   async function VerifyEmail() {
+   async function VerifyEmail(event) {
+        event.preventDefault();
+
         let email = document.getElementById('email').value;
         if(email.length === 0){
            errorToast('Please enter your email address')
+           return;
         }
-        else{
-            showLoader();
+        showLoader();
+        try{
             let res = await axios.post('/send-otp', {email: email});
             hideLoader();
             if(res.status===200 && res.data['status']==='success'){
@@ -35,6 +40,13 @@
             else{
                 errorToast(res.data['message'])
             }
+        }catch(error){
+            if(error.response){
+                errorToast(error.response.data.message);
+            }else{
+                errorToast('Something went wrong');
+            }
+            hideLoader();
         }
 
     }

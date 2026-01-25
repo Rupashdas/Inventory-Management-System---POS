@@ -16,7 +16,7 @@ class TokenVerificationMiddleware
      */
     public function handle(Request $request, Closure $next): Response 
     {
-        $token = $request->header('token');
+        $token = $request->cookie('reset_token');
         $result = JWTToken::verifyToken($token);
         if($result === "unauthorized"){
             return response()->json([

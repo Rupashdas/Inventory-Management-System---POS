@@ -5,13 +5,15 @@
                 <div class="card-body">
                     <h4>SET NEW PASSWORD</h4>
                     <br/>
-                    <label>New Password</label>
-                    <input id="password" placeholder="New Password" class="form-control" type="password"/>
-                    <br/>
-                    <label>Confirm Password</label>
-                    <input id="cpassword" placeholder="Confirm Password" class="form-control" type="password"/>
-                    <br/>
-                    <button onclick="ResetPass()" class="btn w-100 bg-gradient-primary">Next</button>
+                    <form onsubmit="ResetPass(event)">
+                        <label>New Password</label>
+                        <input id="password" placeholder="New Password" class="form-control" type="password"/>
+                        <br/>
+                        <label>Confirm Password</label>
+                        <input id="cpassword" placeholder="Confirm Password" class="form-control" type="password"/>
+                        <br/>
+                        <button type="submit" class="btn w-100 bg-gradient-primary">Next</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -20,32 +22,38 @@
 
 <script>
   async function ResetPass() {
+        event.preventDefault();
+        
         let password = document.getElementById('password').value;
         let cpassword = document.getElementById('cpassword').value;
 
         if(password.length===0){
             errorToast('Password is required')
+            return;
         }
-        else if(cpassword.length===0){
+        if(cpassword.length===0){
             errorToast('Confirm Password is required')
+            return;
         }
-        else if(password!==cpassword){
+        if(password!==cpassword){
             errorToast('Password and Confirm Password must be same')
+            return;
         }
-        else{
-          showLoader()
-          let res=await axios.post("/reset-password",{password:password});
-          hideLoader();
-          if(res.status===200 && res.data['status']==='success'){
-              successToast(res.data['message']);
-              setTimeout(function () {
-                  window.location.href="/userLogin";
-              },1000);
-          }
-          else{
-            errorToast(res.data['message'])
-          }
-        }
+        showLoader()
+        try{
+            let res=await axios.post("/reset-password",{newPassword:password});
+            hideLoader();
+            if(res.status===200 && res.data['status']==='success'){
+                successToast(res.data['message']);
+                setTimeout(function () {
+                    window.location.href="/userLogin";
+                },1000);
+            }
+            else{
+                errorToast(res.data['message'])
+            }
+        } catch(err) {
 
+        }
     }
 </script>

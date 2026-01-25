@@ -69,8 +69,8 @@ async function onRegistration(event) {
         else if(password.length===0){
             errorToast('Password is required')
         }
-        else{
-            showLoader();
+        showLoader();
+        try{
             let res=await axios.post("/user-registration",{
                 email:email,
                 firstName:firstName,
@@ -84,10 +84,22 @@ async function onRegistration(event) {
                 setTimeout(function (){
                     window.location.href='/userLogin'
                 },2000)
-            }
-            else{
+            } else{
                 errorToast(res.data['message'])
             }
+        }catch (error){
+            hideLoader();
+            if (error.response.data.message) {
+                errorToast(error.response.data.message);
+            }else if(error.response.data.errors){
+                let errors=error.response.data.errors;
+                for (let key in errors){
+                    errorToast(errors[key][0]);
+                }
+            } else {
+                errorToast("Something went wrong");
+            }
+            // errorToast()
         }
     }
 </script>
