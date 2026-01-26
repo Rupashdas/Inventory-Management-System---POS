@@ -29,7 +29,11 @@ class UserController extends Controller
     public function resetPasswordPage(){
         return view('pages.auth.reset-pass-page');
     }
-
+    
+    public function profilePage(){
+        return view('pages.dashboard.profile-page');
+    }
+    
     /*
     * User registration
     */
@@ -83,9 +87,9 @@ class UserController extends Controller
     */
     public function userLogin(Request $request){
         try{
-
             $email = $request->input('email');
             $password = $request->input('password');
+
             $user = User::where('email', $email)->first();
             $count = 0;
             
@@ -94,58 +98,20 @@ class UserController extends Controller
             }
 
             if($count == 1){
-                $token = JWTToken::createToken($email);
+                $token = JWTToken::createToken($email, $user->id);
                 return response()->json([
                     'message' => 'Login successful',
                     'status' => "success",
-                ], 200)->cookie('pos_token', $token, 60*24);
+                ], 200)->cookie('token', $token, 60*24);
             }else{
                 return response()->json([
                     'message' => 'Email or Password is incorrect',
                     'status' => "failed",
                 ], 401);
             }
-
-
-            // // Validation rules
-            // $validator = Validator::make($request->all(), [
-            //     'email' => 'required|string|email',
-            //     'password' => 'required|string',
-            // ]);
-
-            // // Check validation failures
-            // if ($validator->fails()) {
-            //     return response()->json([
-            //         'errors' => $validator->errors()
-            //     ], 422);
-            // }
-
-            // // Validated data
-            // $validated = $validator->validated();
-
-            // // Find user by email
-            // $user = User::where('email', $validated['email'])->first();
-            // if(!$user || !Hash::check($validated['password'], $user->password)){
-            //     return response()->json([
-            //         'message' => 'Invalid credentials',
-            //         'status' => "failed",
-            //     ], 401);
-            // }
-
-            // // Generate JWT Token
-            // $token = JWTToken::createToken($user->email);
-
-            // // Return success response with token
-            // return response()->json([
-            //     'message' => 'Login successful',
-            //     'status' => "success",
-            //     'token' => $token,
-            // ], 200);
-
             
         } catch(Exception $e){
             // log error message
-            \Log::error('User Login Error: '.$e->getMessage());
             return response()->json([
                 'message' => 'Login failed',
                 'status' => "failed",
@@ -191,7 +157,7 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'OTP verified successfully',
                 'status' => "success",
-            ], 200)->cookie('reset_token', $token, 60*24*30);
+            ], 200)->cookie('token', $token, 60*24*30);
         }else{
             return response()->json([
                 'message' => 'Invalid OTP',
@@ -217,7 +183,7 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'Password reset successfully',
                 'status' => "success",
-            ], 200);
+            ], 200)->cookie('token', '', -1);
         }catch(Exception $e){
             return response()->json([
                 'message' => 'Password reset failed',
@@ -227,5 +193,8 @@ class UserController extends Controller
         
     }
 
+    public function userLogout(){
+        return redirect('/userLogin')->cookie('token', '', -1);
+    }
 
 }

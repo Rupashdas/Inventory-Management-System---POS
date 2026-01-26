@@ -9,4 +9,6 @@ class DashboardController extends Controller
     public function dashboardPage(){
         return view('pages.dashboard.dashboard-page');
     }
+    
+
 }
