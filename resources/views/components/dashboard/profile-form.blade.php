@@ -87,9 +87,6 @@
         else if(mobile.length===0){
             errorToast('Mobile is required')
         }
-        else if(password.length===0){
-            errorToast('Password is required')
-        }
         else{
             showLoader();
             let res=await axios.post("/user-update",{

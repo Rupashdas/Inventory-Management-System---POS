@@ -107,7 +107,6 @@ class UserController extends Controller
             if ($user && Hash::check($password, $user->password)) {
                 $count = 1;
             }
-
             if ($count == 1) {
                 $token = JWTToken::createToken($email, $user->id);
                 return response()->json([
