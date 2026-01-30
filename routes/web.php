@@ -56,3 +56,6 @@ Route::get("/list-customer", [CustomerController::class, 'customerList'])->middl
 Route::post("/delete-customer", [CustomerController::class, 'customerDelete'])->middleware([TokenVerificationMiddleware::class]);
 Route::post("/update-customer", [CustomerController::class, 'customerUpdate'])->middleware([TokenVerificationMiddleware::class]);
 Route::post("/customer-by-id", [CustomerController::class, 'customerByID'])->middleware([TokenVerificationMiddleware::class]);
+
+// Products Page
+Route::get("/productPage", [ProductController::class, "productPage"])->middleware([TokenVerificationMiddleware::class]);
