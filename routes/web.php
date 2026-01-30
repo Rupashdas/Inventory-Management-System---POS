@@ -2,6 +2,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\TokenVerificationMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -59,3 +60,10 @@ Route::post("/customer-by-id", [CustomerController::class, 'customerByID'])->mid
 
 // Products Page
 Route::get("/productPage", [ProductController::class, "productPage"])->middleware([TokenVerificationMiddleware::class]);
+
+// Product API
+Route::post("/create-product", [ProductController::class, 'createProduct'])->middleware([TokenVerificationMiddleware::class]);
+Route::post("/delete-product", [ProductController::class, 'deleteProduct'])->middleware([TokenVerificationMiddleware::class]);
+Route::post("/update-product", [ProductController::class, 'updateProduct'])->middleware([TokenVerificationMiddleware::class]);
+Route::get("/list-product", [ProductController::class, 'productList'])->middleware([TokenVerificationMiddleware::class]);
+Route::post("/product-by-id", [ProductController::class, 'productByID'])->middleware([TokenVerificationMiddleware::class]);
