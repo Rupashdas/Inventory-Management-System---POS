@@ -9,14 +9,13 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        Schema::create('invoices', function (Blueprint $table) {
+        Schema::create('invoice_products', function (Blueprint $table) {
             $table->id();
-            $table->string('total');
-            $table->string('discount');
-            $table->string('vat');
-            $table->string('payable');
+            $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->string('qty');
+            $table->string('sale_price');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
-        Schema::dropIfExists('invoices');
+        Schema::dropIfExists('invoice_products');
     }
 };

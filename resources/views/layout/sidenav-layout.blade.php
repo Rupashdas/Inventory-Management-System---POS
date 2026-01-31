@@ -57,7 +57,7 @@
                         <h6>User Name</h6>
                         <hr class="user-dropdown-divider  p-0"/>
                     </div>
-                    <a href="{{url('/userProfile')}}" class="side-bar-item">
+                    <a href="{{url('/userProfile')}}" class="side-bar-item {{ Request::is('userProfile') ? 'active' : '' }}">
                         <span class="side-bar-item-caption">Profile</span>
                     </a>
                     <a href="{{url("/logout")}}" class="side-bar-item">
@@ -72,37 +72,37 @@
 
 <div id="sideNavRef" class="side-nav-open">
 
-    <a href="{{url("/dashboard")}}" class="side-bar-item">
+    <a href="{{url("/dashboard")}}" class="side-bar-item {{ Request::is('dashboard') ? 'active' : '' }}">
         <i class="bi bi-graph-up"></i>
         <span class="side-bar-item-caption">Dashboard</span>
     </a>
 
-    <a href="{{url("/customerPage")}}" class="side-bar-item">
+    <a href="{{url("/customerPage")}}" class="side-bar-item {{ Request::is('customerPage') ? 'active' : '' }}">
         <i class="bi bi-people"></i>
         <span class="side-bar-item-caption">Customer</span>
     </a>
 
-    <a href="{{url("/categoryPage")}}" class="side-bar-item">
+    <a href="{{url("/categoryPage")}}" class="side-bar-item {{ Request::is('categoryPage') ? 'active' : '' }}">
         <i class="bi bi-list-nested"></i>
         <span class="side-bar-item-caption">Category</span>
     </a>
 
-    <a href="{{url("/productPage")}}" class="side-bar-item">
+    <a href="{{url("/productPage")}}" class="side-bar-item {{ Request::is('productPage') ? 'active' : '' }}">
         <i class="bi bi-bag"></i>
         <span class="side-bar-item-caption">Product</span>
     </a>
 
-    <a href="{{url('/salePage')}}" class="side-bar-item">
+    <a href="{{url('/salePage')}}" class="side-bar-item {{ Request::is('salePage') ? 'active' : '' }}">
         <i class="bi bi-currency-dollar"></i>
         <span class="side-bar-item-caption">Create Sale</span>
     </a>
 
-    <a href="{{url('/invoicePage')}}" class="side-bar-item">
+    <a href="{{url('/invoicePage')}}" class="side-bar-item {{ Request::is('invoicePage') ? 'active' : '' }}">
         <i class="bi bi-receipt"></i>
         <span class="side-bar-item-caption">Invoice</span>
     </a>
 
-    <a href="{{url('/reportPage')}}" class="side-bar-item">
+    <a href="{{url('/reportPage')}}" class="side-bar-item {{ Request::is('reportPage') ? 'active' : '' }}">
         <i class="bi bi-file-earmark-bar-graph"></i>
         <span class="side-bar-item-caption">Report</span>
     </a>
