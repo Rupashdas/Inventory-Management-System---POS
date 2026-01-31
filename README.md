@@ -1,3 +1,174 @@
+# POS (Point of Sale) - Laravel
+
+A simple Point of Sale (POS) application built with Laravel. This repository contains the backend API, models, migrations, and seeders for managing products, categories, customers, invoices, and users.
+
+## Table of Contents
+
+- Project overview
+- Requirements
+- Installation
+- Environment
+- Database (migrations & seeding)
+- Default user account
+- Running the application
+- Running tests
+- Useful commands
+- Contributing
+- License
+
+## Project overview
+
+This POS project provides CRUD APIs and a minimal web interface (where applicable) to manage:
+
+- Products
+- Categories
+- Customers
+- Invoices and invoice products
+- Users and authentication
+
+The codebase follows standard Laravel conventions and is intended for local development, testing, and as a starting point for custom extensions.
+
+## Requirements
+
+- PHP 8.1+ (or the version required by the installed Laravel version)
+- Composer
+- A supported database (MySQL, MariaDB, SQLite, PostgreSQL)
+- Node.js and npm (for frontend assets, optional)
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repo-url>
+cd pos
+```
+
+2. Install PHP dependencies:
+
+```bash
+composer install
+```
+
+3. Install JS dependencies and build assets (optional):
+
+```bash
+npm install
+npm run build
+```
+
+4. Create an `.env` file from the example and set the application key:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+5. Configure database connection settings in `.env` (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
+
+## Environment
+
+Important `.env` keys you will likely set:
+
+- `APP_NAME`, `APP_URL`
+- `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
+- `MAIL_*` for e-mail delivery (used for OTP or notifications)
+
+## Database (migrations & seeding)
+
+Run migrations and (optionally) seed the database:
+
+```bash
+php artisan migrate
+php artisan db:seed --class=CategorySeeder
+php artisan db:seed
+```
+
+Note: The project includes factories and seeders for sample data. You can refresh and reseed with:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+## Default user account
+
+The following user account is provided for development/testing and is referenced in the project documentation:
+
+```
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "admin@example.com",
+  "password": "password",
+  "mobile": "+123456789"
+}
+```
+
+- Email: `admin@example.com`
+- Password: `password`
+
+Warning: This account uses an insecure password for local/testing only. Do not use these credentials in production.
+
+If you want this user created automatically, ensure your seeders create it or run a tinker script, for example:
+
+```bash
+php artisan tinker
+\App\Models\User::create([
+  'firstName' => 'John',
+  'lastName' => 'Doe',
+  'email' => 'admin@example.com',
+  'password' => bcrypt('password'),
+  'mobile' => '+123456789'
+]);
+```
+
+## Running the application
+
+Start the local development server:
+
+```bash
+php artisan serve
+```
+
+Visit `http://127.0.0.1:8000` (or the `APP_URL` you configured).
+
+If using Docker, Valet, or other envs, use the corresponding run instructions.
+
+## Running tests
+
+- Run PHPUnit tests:
+
+```bash
+vendor/bin/phpunit
+```
+
+## Useful commands
+
+- `php artisan route:list` — view routes
+- `php artisan migrate` — run migrations
+- `php artisan db:seed` — run seeders
+- `php artisan tinker` — interact with the app in an interactive shell
+
+## Contributing
+
+Contributions are welcome. Please follow these steps:
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Make changes and add tests where applicable.
+4. Open a pull request describing your changes.
+
+## License
+
+This project is open-sourced software. See the `LICENSE` file for details (if present).
+
+---
+
+If you'd like, I can also:
+
+- Add a seeder to create the default admin user automatically.
+- Add example `.env` notes or a sample Postman collection for the API endpoints.
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
