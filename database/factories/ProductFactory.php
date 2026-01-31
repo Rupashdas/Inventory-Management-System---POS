@@ -93,10 +93,15 @@ class ProductFactory extends Factory {
                 file_put_contents($uploadsDir . DIRECTORY_SEPARATOR . $filename, $placeholderPng);
             }
         }
+        $random_user_id = User::inRandomOrder()->first()->id;
+        $category = Category::where('user_id', $random_user_id)->inRandomOrder()->first();
 
+        if (!$category) {
+            $category = Category::factory()->create(['user_id' => $random_user_id]);
+        }
         return [
-            'user_id'     => User::inRandomOrder()->first()->id,
-            'category_id' => Category::inRandomOrder()->first()->id,
+            'user_id'     => $random_user_id,
+            'category_id' => $category->id,
             'name'        => $this->faker->word(),
             'price'       => $this->faker->randomFloat(2, 10, 500),
             'unit'        => $this->faker->randomElement(['kg', 'pcs', 'litre', 'pack']),

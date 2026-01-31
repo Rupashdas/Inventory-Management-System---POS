@@ -74,6 +74,7 @@
         await UpdateFillCategoryDropDown();
 
         let res=await axios.post("/product-by-id",{id:id})
+        console.log(res);
         hideLoader();
 
         document.getElementById('productNameUpdate').value=res.data['name'];
@@ -118,7 +119,7 @@
             formData.append('id',updateID)
             formData.append('name',productNameUpdate)
             formData.append('price',productPriceUpdate)
-            formData.append('unit',productNameUpdate)
+            formData.append('unit',productUnitUpdate)
             formData.append('category_id',productCategoryUpdate)
             formData.append('file_path',filePath)
 
