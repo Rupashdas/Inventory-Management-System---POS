@@ -169,7 +169,11 @@ body {
 
 .page {
     padding: 4px 26px 40px;
-    max-width: 1560px;
+    /* Full width of whatever is left beside the sidebar. A till and a stock
+       table both want the room; capping the column only pushed an empty
+       gutter onto a wide display. */
+    max-width: 100%;
+    margin: 0 auto;
 }
 
 .page-head {
