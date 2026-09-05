@@ -1,84 +1,85 @@
-<div class="container-fluid">
-    <div class="row">
-    <div class="col-md-12 col-sm-12 col-lg-12">
-        <div class="card px-5 py-5">
-            <div class="row justify-content-between ">
-                <div class="align-items-center col">
-                    <h4>Category</h4>
-                </div>
-                <div class="align-items-center col">
-                    <button data-bs-toggle="modal" data-bs-target="#create-modal" class="float-end btn m-0 bg-gradient-primary">Create</button>
-                </div>
-            </div>
-            <hr class="bg-secondary"/>
-            <div class="table-responsive">
-            <table class="table" id="tableData">
-                <thead>
-                <tr class="bg-light">
-                    <th>No</th>
-                    <th>Category</th>
-                    <th>Action</th>
-                </tr>
-                </thead>
-                <tbody id="tableList">
+<div class="page">
 
-                </tbody>
-            </table>
-            </div>
+    <div class="page-head">
+        <div>
+            <h1>Categories</h1>
+            <p class="sub">How the catalogue is grouped. A category in use cannot be removed.</p>
+        </div>
+        <div class="actions">
+            <button data-bs-toggle="modal" data-bs-target="#create-modal" class="btn btn-accent">
+                <i class="bi bi-plus-lg me-1"></i> Add category
+            </button>
         </div>
     </div>
-</div>
+
+    <div class="panel" style="max-width:760px">
+        <div class="panel-head">
+            <h2>All categories</h2>
+            <span class="hint" id="categoryCount"></span>
+        </div>
+        <div class="panel-body tight">
+            <table class="table tidy" id="tableData">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th class="num">Products</th>
+                    <th class="num">Actions</th>
+                </tr>
+                </thead>
+                <tbody id="tableList"></tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 <script>
-
 getList();
 
-
 async function getList() {
-
-
     showLoader();
-    let res=await axios.get("/list-category");
+    let res = await axios.get("/list-category");
     hideLoader();
 
-    let tableList=$("#tableList");
-    let tableData=$("#tableData");
+    let tableList = $("#tableList");
+    let tableData = $("#tableData");
 
     tableData.DataTable().destroy();
     tableList.empty();
 
-    res.data.forEach(function (item,index) {
-        let row=`<tr>
-                    <td>${index+1}</td>
-                    <td>${item['name']}</td>
-                    <td>
-                        <button data-id="${item['id']}" class="btn editBtn btn-sm btn-outline-success">Edit</button>
-                        <button data-id="${item['id']}" class="btn deleteBtn btn-sm btn-outline-danger">Delete</button>
+    res.data.forEach(function (item) {
+        const count = Number(item['products_count'] || 0);
+
+        let row = `<tr>
+                    <td><div class="cell-title">${escapeHtml(item['name'])}</div></td>
+                    <td class="num">
+                        <span class="tag ${count ? 'tag-mute' : 'tag-low'}">${count ? count + (count === 1 ? ' product' : ' products') : 'empty'}</span>
                     </td>
-                 </tr>`
-        tableList.append(row)
-    })
+                    <td class="num" style="white-space:nowrap">
+                        <button title="Edit" data-id="${item['id']}" class="btn-icon editBtn"><i class="bi bi-pencil"></i></button>
+                        <button title="Delete" data-id="${item['id']}" data-name="${escapeHtml(item['name'])}" class="btn-icon danger deleteBtn"><i class="bi bi-trash3"></i></button>
+                    </td>
+                 </tr>`;
+        tableList.append(row);
+    });
+
+    $("#categoryCount").text(res.data.length ? `${res.data.length} categories` : '');
 
     $('.editBtn').on('click', async function () {
-           let id= $(this).data('id');
-           await FillUpUpdateForm(id)
-           $("#update-modal").modal('show');
-    })
+        await FillUpUpdateForm($(this).data('id'));
+        $("#update-modal").modal('show');
+    });
 
-    $('.deleteBtn').on('click',function () {
-        let id= $(this).data('id');
+    $('.deleteBtn').on('click', function () {
+        $("#deleteID").val($(this).data('id'));
+        $("#deleteName").text($(this).data('name'));
         $("#delete-modal").modal('show');
-        $("#deleteID").val(id);
-    })
+    });
 
-    new DataTable('#tableData',{
-       order:[[0,'desc']],
-       lengthMenu:[5,10,15,20,30]
-   });
-
+    new DataTable('#tableData', {
+        order: [[0, 'asc']],
+        lengthMenu: [10, 15, 25, 50],
+        columnDefs: [{ orderable: false, targets: 2 }]
+    });
 }
-
-
 </script>
-

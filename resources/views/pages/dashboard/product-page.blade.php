@@ -1,7 +1,10 @@
 @extends('layout.sidenav-layout')
+@section('title', 'Products & stock')
 @section('content')
     @include('components.product.product-list')
     @include('components.product.product-delete')
     @include('components.product.product-create')
     @include('components.product.product-update')
+    @include('components.product.product-restock')
+    @include('components.product.product-stock-history')
 @endsection

@@ -1,92 +1,103 @@
-<div class="container-fluid">
-    <div class="row">
-    <div class="col-md-12 col-sm-12 col-lg-12">
-        <div class="card px-5 py-5">
-            <div class="row justify-content-between ">
-                <div class="align-items-center col">
-                    <h5>Invoices</h5>
-                </div>
-                <div class="align-items-center col">
-                    <a    href="{{url("/salePage")}}" class="float-end btn m-0 bg-gradient-primary">Create Sale</a>
-                </div>
-            </div>
-            <hr class="bg-dark "/>
-            <table class="table" id="tableData">
+<div class="page">
+
+    <div class="page-head">
+        <div>
+            <h1>Invoices</h1>
+            <p class="sub">Every sale recorded, newest first. Deleting one puts its stock back.</p>
+        </div>
+        <div class="actions">
+            <a href="{{url('/salePage')}}" class="btn btn-accent">
+                <i class="bi bi-upc-scan me-1"></i> New sale
+            </a>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head">
+            <h2>All invoices</h2>
+            <span class="hint" id="invoiceTotals"></span>
+        </div>
+        <div class="panel-body tight">
+            <table class="table tidy" id="tableData">
                 <thead>
-                <tr class="bg-light">
+                <tr>
                     <th>No</th>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Total</th>
-                    <th>Vat</th>
-                    <th>Discount</th>
-                    <th>Payable</th>
-                    <th>Action</th>
+                    <th>Customer</th>
+                    <th class="num">Total</th>
+                    <th class="num">Discount</th>
+                    <th class="num">Tax</th>
+                    <th class="num">Payable</th>
+                    <th>Date</th>
+                    <th class="num">Actions</th>
                 </tr>
                 </thead>
-                <tbody id="tableList">
-
-                </tbody>
+                <tbody id="tableList"></tbody>
             </table>
         </div>
     </div>
-</div>
+
 </div>
 
 <script>
-
 getList();
 
-
 async function getList() {
-
-
     showLoader();
-    let res=await axios.get("/invoice-select");
+    let res = await axios.get("/invoice-select");
     hideLoader();
 
-    let tableList=$("#tableList");
-    let tableData=$("#tableData");
+    let tableList = $("#tableList");
+    let tableData = $("#tableData");
 
     tableData.DataTable().destroy();
     tableList.empty();
 
-    res.data.forEach(function (item,index) {
-        let row=`<tr>
-                    <td>${index+1}</td>
-                    <td>${item['customer']['name']}</td>
-                    <td>${item['customer']['mobile']}</td>
-                    <td>${item['total']}</td>
-                    <td>${item['vat']}</td>
-                    <td>${item['discount']}</td>
-                    <td>${item['payable']}</td>
+    let collected = 0;
+
+    res.data.forEach(function (item) {
+        collected += Number(item['payable']);
+
+        // A customer can be deleted while their invoices remain, so the name is
+        // not assumed to be there -- reading .name off nothing used to blank
+        // the whole table.
+        const customer = item['customer'];
+
+        let row = `<tr>
+                    <td class="cell-sub">#${item['id']}</td>
                     <td>
-                        <button data-id="${item['id']}" data-cus="${item['customer']['id']}" class="viewBtn btn btn-outline-dark text-sm px-3 py-1 btn-sm m-0"><i class="fa text-sm fa-eye"></i></button>
-                        <button data-id="${item['id']}" data-cus="${item['customer']['id']}" class="deleteBtn btn btn-outline-dark text-sm px-3 py-1 btn-sm m-0"><i class="fa text-sm  fa-trash-alt"></i></button>
+                        <div class="cell-title">${escapeHtml(customer ? customer['name'] : 'Walk-in')}</div>
+                        <div class="cell-sub">${escapeHtml(customer ? customer['mobile'] : '')}</div>
                     </td>
-                 </tr>`
-        tableList.append(row)
-    })
-
-    $('.viewBtn').on('click', async function () {
-        let id= $(this).data('id');
-        let cus= $(this).data('cus');
-        await InvoiceDetails(cus,id)
-    })
-
-    $('.deleteBtn').on('click',function () {
-        let id= $(this).data('id');
-        document.getElementById('deleteID').value=id;
-        $("#delete-modal").modal('show');
-    })
-
-    new DataTable('#tableData',{
-        order:[[0,'desc']],
-        lengthMenu:[5,10,15,20,30]
+                    <td class="num">${money(item['total'])}</td>
+                    <td class="num">${money(item['discount'])}</td>
+                    <td class="num">${money(item['vat'])}</td>
+                    <td class="num"><strong>${money(item['payable'])}</strong></td>
+                    <td class="cell-sub">${new Date(item['created_at']).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                    <td class="num" style="white-space:nowrap">
+                        <button title="View" data-id="${item['id']}" data-cus="${customer ? customer['id'] : ''}" class="btn-icon viewBtn"><i class="bi bi-eye"></i></button>
+                        <button title="Delete" data-id="${item['id']}" class="btn-icon danger deleteBtn"><i class="bi bi-trash3"></i></button>
+                    </td>
+                 </tr>`;
+        tableList.append(row);
     });
 
+    $("#invoiceTotals").text(res.data.length
+        ? `${res.data.length} invoices · $ ${money(collected)} collected`
+        : '');
+
+    $('.viewBtn').on('click', async function () {
+        await InvoiceDetails($(this).data('cus'), $(this).data('id'));
+    });
+
+    $('.deleteBtn').on('click', function () {
+        document.getElementById('deleteID').value = $(this).data('id');
+        $("#delete-modal").modal('show');
+    });
+
+    new DataTable('#tableData', {
+        order: [[0, 'desc']],
+        lengthMenu: [10, 15, 25, 50],
+        columnDefs: [{ orderable: false, targets: 7 }]
+    });
 }
-
-
 </script>
-

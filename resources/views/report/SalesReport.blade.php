@@ -1,93 +1,140 @@
 <html>
 <head>
+    <meta charset="utf-8"/>
     <style>
-        .customers {
-            font-family: Arial, Helvetica, sans-serif;
-            border-collapse: collapse;
-            width: 100%;
-            font-size: 12px !important;
+        @page { margin: 28px 32px; }
+
+        body {
+            font-family: DejaVu Sans, Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #1f2430;
         }
 
-        .customers td, #customers th {
-            border: 1px solid #ddd;
-            padding: 8px;
+        .masthead {
+            border-bottom: 2px solid #5145cd;
+            padding-bottom: 10px;
+            margin-bottom: 18px;
         }
 
-        .customers tr:nth-child(even){background-color: #f2f2f2;}
+        .masthead h1 {
+            margin: 0;
+            font-size: 20px;
+            letter-spacing: -0.2px;
+        }
 
-        .customers tr:hover {background-color: #ddd;}
+        .masthead .meta {
+            margin-top: 4px;
+            font-size: 10px;
+            color: #6b7280;
+        }
 
-        .customers th {
-            padding-top: 12px;
-            padding-bottom: 12px;
-            padding-left: 6px;
+        .totals { width: 100%; border-collapse: separate; border-spacing: 6px 0; margin-bottom: 20px; }
+
+        .totals td {
+            background: #f6f7f9;
+            border: 1px solid #e6e8ec;
+            border-radius: 4px;
+            padding: 10px 12px;
+            width: 20%;
+        }
+
+        .totals .label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.6px; color: #6b7280; }
+        .totals .value { font-size: 15px; font-weight: bold; padding-top: 3px; }
+
+        h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; color: #6b7280; margin: 0 0 8px; }
+
+        table.rows { width: 100%; border-collapse: collapse; }
+
+        table.rows th {
             text-align: left;
-            background-color: #04AA6D;
-            color: white;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #6b7280;
+            border-bottom: 1px solid #d1d5db;
+            padding: 6px 8px;
         }
+
+        table.rows td { padding: 7px 8px; border-bottom: 1px solid #eceef1; }
+        table.rows tr:nth-child(even) td { background: #fafbfc; }
+
+        .num { text-align: right; }
+        .empty { padding: 24px 8px; color: #6b7280; font-style: italic; }
+        .foot { margin-top: 18px; font-size: 9px; color: #9ca3af; }
     </style>
 </head>
 <body>
 
-<h3>Summary</h3>
+<div class="masthead">
+    <h1>Sales report</h1>
+    <div class="meta">
+        {{ $FormDate }} to {{ $ToDate }}
+        @if(trim($shopName)) &middot; {{ trim($shopName) }} @endif
+        &middot; printed {{ $printed }}
+    </div>
+</div>
 
-<table class="customers" >
-    <thead>
+<table class="totals">
     <tr>
-        <th>Report</th>
-        <th>Date</th>
-        <th>Total</th>
-        <th>Discount</th>
-        <th>Vat</th>
-        <th>Payable</th>
+        <td>
+            <div class="label">Orders</div>
+            <div class="value">{{ $orders }}</div>
+        </td>
+        <td>
+            <div class="label">Total</div>
+            <div class="value">{{ number_format($total, 2) }}</div>
+        </td>
+        <td>
+            <div class="label">Discount</div>
+            <div class="value">{{ number_format($discount, 2) }}</div>
+        </td>
+        <td>
+            <div class="label">Sales tax</div>
+            <div class="value">{{ number_format($vat, 2) }}</div>
+        </td>
+        <td>
+            <div class="label">Payable</div>
+            <div class="value">{{ number_format($payable, 2) }}</div>
+        </td>
     </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>Sales Report</td>
-        <td>{{$FormDate}} to {{$ToDate}}</td>
-        <td>{{$total}}</td>
-        <td>{{$discount}}</td>
-        <td>{{$vat}}</td>
-        <td>{{$payable}} </td>
-    </tr>
-    </tbody>
 </table>
 
+<h2>Invoices</h2>
 
-<h3>Details</h3>
-<table class="customers" >
+<table class="rows">
     <thead>
     <tr>
+        <th>No</th>
         <th>Customer</th>
         <th>Phone</th>
-        <th>Email</th>
-        <th>Total</th>
-        <th>Discount</th>
-        <th>Vat</th>
-        <th>Payable</th>
+        <th class="num">Total</th>
+        <th class="num">Discount</th>
+        <th class="num">Sales tax</th>
+        <th class="num">Payable</th>
         <th>Date</th>
     </tr>
     </thead>
     <tbody>
-    @foreach ($list as $item)
+    @forelse ($list as $item)
         <tr>
-            <td>{{$item->customer->name}}</td>
-            <td>{{$item->customer->mobile}}</td>
-            <td>{{$item->customer->email}}</td>
-            <td>{{$item->total }}</td>
-            <td>{{$item->discount }}</td>
-            <td>{{$item->vat }}</td>
-            <td>{{$item->payable }}</td>
-            <td>{{$item->created_at }}</td>
+            <td>#{{ $item->id }}</td>
+            <td>{{ optional($item->customer)->name ?? 'Walk-in' }}</td>
+            <td>{{ optional($item->customer)->mobile }}</td>
+            <td class="num">{{ number_format((float) $item->total, 2) }}</td>
+            <td class="num">{{ number_format((float) $item->discount, 2) }}</td>
+            <td class="num">{{ number_format((float) $item->vat, 2) }}</td>
+            <td class="num">{{ number_format((float) $item->payable, 2) }}</td>
+            <td>{{ $item->created_at->format('d M Y, H:i') }}</td>
         </tr>
-    @endforeach
-
+    @empty
+        <tr>
+            <td class="empty" colspan="8">No sales were recorded between these dates.</td>
+        </tr>
+    @endforelse
     </tbody>
 </table>
+
+<div class="foot">Generated by the POS application.</div>
+
 </body>
 </html>
-
-
-
-

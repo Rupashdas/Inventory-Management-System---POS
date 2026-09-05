@@ -21,8 +21,20 @@
         <env name="APP_ENV" value="testing"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_DRIVER" value="array"/>
-        <!-- <env name="DB_CONNECTION" value="sqlite"/> -->
-        <!-- <env name="DB_DATABASE" value=":memory:"/> -->
+        <!--
+            A real MySQL database, not the sqlite :memory: the commented-out
+            lines here used to suggest.
+
+            This is not a preference. The application was developed against
+            SQLite, which ignores VARCHAR lengths, so `password VARCHAR(50)`
+            truncated nothing there and rejected every bcrypt hash the moment it
+            met MySQL. A test suite on SQLite would have agreed with the bug.
+            The queries are MySQL's too: DATE(), CAST(x AS UNSIGNED), and
+            SELECT FOR UPDATE.
+        -->
+        <env name="DB_CONNECTION" value="mysql"/>
+        <env name="DB_DATABASE" value="inventory_pos_test"/>
+        <env name="JWT_KEY" value="testing-jwt-signing-key-at-least-32-bytes-long"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>

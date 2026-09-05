@@ -71,6 +71,8 @@ Route::post("/delete-product", [ProductController::class, 'deleteProduct'])->mid
 Route::post("/update-product", [ProductController::class, 'updateProduct'])->middleware([TokenVerificationMiddleware::class]);
 Route::get("/list-product", [ProductController::class, 'productList'])->middleware([TokenVerificationMiddleware::class]);
 Route::post("/product-by-id", [ProductController::class, 'productByID'])->middleware([TokenVerificationMiddleware::class]);
+Route::post("/restock-product", [ProductController::class, 'restock'])->middleware([TokenVerificationMiddleware::class]);
+Route::post("/product-stock-history", [ProductController::class, 'stockHistory'])->middleware([TokenVerificationMiddleware::class]);
 
 // Invoice
 Route::post("/invoice-create", [InvoiceController::class, 'invoiceCreate'])->middleware([TokenVerificationMiddleware::class]);
@@ -80,4 +82,9 @@ Route::post("/invoice-delete", [InvoiceController::class, 'invoiceDelete'])->mid
 
 // SUMMARY & Report
 Route::get("/summary", [DashboardController::class, 'summary'])->middleware([TokenVerificationMiddleware::class]);
+Route::get("/sales-trend", [DashboardController::class, 'salesTrend'])->middleware([TokenVerificationMiddleware::class]);
+Route::get("/low-stock", [DashboardController::class, 'lowStock'])->middleware([TokenVerificationMiddleware::class]);
+Route::get("/recent-invoices", [DashboardController::class, 'recentInvoices'])->middleware([TokenVerificationMiddleware::class]);
+Route::get("/top-products", [DashboardController::class, 'topProducts'])->middleware([TokenVerificationMiddleware::class]);
 Route::get("/sales-report/{FormDate}/{ToDate}", [ReportController::class, 'SalesReport'])->middleware([TokenVerificationMiddleware::class]);
+Route::get("/stock-report", [ReportController::class, 'StockReport'])->middleware([TokenVerificationMiddleware::class]);

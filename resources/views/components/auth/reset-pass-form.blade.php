@@ -1,59 +1,62 @@
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-7 col-lg-6 center-screen">
-            <div class="card animated fadeIn w-90 p-4">
-                <div class="card-body">
-                    <h4>SET NEW PASSWORD</h4>
-                    <br/>
-                    <form onsubmit="ResetPass(event)">
-                        <label>New Password</label>
-                        <input id="password" placeholder="New Password" class="form-control" type="password"/>
-                        <br/>
-                        <label>Confirm Password</label>
-                        <input id="cpassword" placeholder="Confirm Password" class="form-control" type="password"/>
-                        <br/>
-                        <button type="submit" class="btn w-100 bg-gradient-primary">Next</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="auth-card animated fadeIn">
+    <h1>Set a new password</h1>
+    <p class="sub">Six characters or more.</p>
+
+    <form onsubmit="ResetPass(event)">
+        <label class="form-label">New password</label>
+        <input id="password" placeholder="••••••••" class="form-control" type="password" autocomplete="new-password"/>
+
+        <label class="form-label mt-3">Confirm it</label>
+        <input id="cpassword" placeholder="••••••••" class="form-control" type="password" autocomplete="new-password"/>
+
+        <button type="submit" class="btn btn-accent w-100 mt-4 py-2">Save password</button>
+    </form>
 </div>
 
 <script>
-  async function ResetPass() {
+  // Takes `event` as an argument. The original declared no parameter and called
+  // event.preventDefault() anyway, leaning on the global window.event -- which
+  // Chrome provides and Firefox does not, so the form did a full page submit
+  // there instead of posting.
+  async function ResetPass(event) {
         event.preventDefault();
-        
+
         let password = document.getElementById('password').value;
         let cpassword = document.getElementById('cpassword').value;
 
-        if(password.length===0){
-            errorToast('Password is required')
+        if (password.length === 0) {
+            errorToast('Choose a password.');
             return;
         }
-        if(cpassword.length===0){
-            errorToast('Confirm Password is required')
+        if (password.length < 6) {
+            errorToast('Passwords must be at least six characters.');
             return;
         }
-        if(password!==cpassword){
-            errorToast('Password and Confirm Password must be same')
+        if (cpassword.length === 0) {
+            errorToast('Type the password a second time.');
             return;
         }
-        showLoader()
-        try{
-            let res=await axios.post("/reset-password",{newPassword:password});
-            hideLoader();
-            if(res.status===200 && res.data['status']==='success'){
+        if (password !== cpassword) {
+            errorToast('The two passwords do not match.');
+            return;
+        }
+
+        showLoader();
+        try {
+            let res = await axios.post("/reset-password", { newPassword: password });
+            if (res.status === 200 && res.data['status'] === 'success') {
                 successToast(res.data['message']);
                 setTimeout(function () {
-                    window.location.href="/userLogin";
-                },1000);
+                    window.location.href = "/userLogin";
+                }, 1000);
+            } else {
+                errorToast(res.data['message']);
             }
-            else{
-                errorToast(res.data['message'])
-            }
-        } catch(err) {
-
+        } catch (error) {
+            const message = error.response && error.response.data && error.response.data.message;
+            errorToast(message || 'The password could not be changed.');
+        } finally {
+            hideLoader();
         }
     }
 </script>
