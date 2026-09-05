@@ -5,9 +5,13 @@
          colors="true"
 >
     <testsuites>
-        <testsuite name="Unit">
-            <directory suffix="Test.php">./tests/Unit</directory>
-        </testsuite>
+        <!--
+            Feature only. There is no Unit suite because there is nothing here
+            worth testing in isolation. The behaviour that matters (stock
+            moving, prices being recomputed, one shop not reaching another's
+            rows) lives in controllers talking to a database, and a mocked
+            version of that would only assert that the mock works.
+        -->
         <testsuite name="Feature">
             <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
