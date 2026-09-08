@@ -7,6 +7,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Mail;
 use \App\Helper\JWTToken;
@@ -77,6 +78,9 @@ class UserController extends Controller {
                 'status'  => "success",
             ], 201);
         } catch (Exception $e) {
+            Log::error('User registration failed', [
+                'exception' => $e,
+            ]);
             return response()->json([
                 'message' => 'Registration failed',
                 'status'  => "failed",

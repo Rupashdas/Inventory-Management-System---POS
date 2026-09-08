@@ -58,8 +58,8 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? [
-                \PDO::MYSQL_ATTR_SSL_CA => storage_path('certs/aiven-ca.pem'),
+            'options' => extension_loaded('pdo_mysql') && env('DB_SSL_CA') ? [
+                Pdo\Mysql::ATTR_SSL_CA => env('DB_SSL_CA'),
             ] : [],
         ],
 
