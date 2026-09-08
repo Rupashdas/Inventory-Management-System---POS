@@ -102,6 +102,7 @@ class ProductFactory extends Factory {
         return [
             'user_id'     => $random_user_id,
             'category_id' => $category->id,
+            'stock'       => $this->faker->numberBetween(1, 100),
             'name'        => $this->faker->word(),
             'price'       => $this->faker->randomFloat(2, 10, 500),
             'unit'        => $this->faker->randomElement(['kg', 'pcs', 'litre', 'pack']),

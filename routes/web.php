@@ -19,10 +19,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
  */
-
+// Redirect the root URL to the user login page
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/userLogin');
 });
+
 Route::post('/user-registration', [UserController::class, 'userRegistration']);
 Route::post('/user-login', [UserController::class, 'userLogin']);
 Route::post('/send-otp', [UserController::class, 'sendOTPCode']);
