@@ -2,12 +2,26 @@
     <h1>Sign in</h1>
     <p class="sub">The till, the stock and the day's takings.</p>
 
+    @php($demo = config('app.demo'))
+    @if (!empty($demo['email']))
+        <div class="demo-box">
+            <div class="demo-head">
+                <span><i class="bi bi-person-badge me-1"></i> Demo account</span>
+                <button type="button" class="btn btn-quiet btn-sm" onclick="FillDemoLogin()">Fill in</button>
+            </div>
+            <div class="demo-row"><span>Email</span><code>{{ $demo['email'] }}</code></div>
+            <div class="demo-row"><span>Password</span><code>{{ $demo['password'] }}</code></div>
+        </div>
+    @endif
+
     <form onsubmit="SubmitLogin(event)">
         <label class="form-label">Email</label>
-        <input id="email" placeholder="you@example.com" class="form-control" type="email" autocomplete="username"/>
+        <input id="email" placeholder="you@example.com" class="form-control" type="email" autocomplete="username"
+               value="{{ $demo['email'] ?? '' }}"/>
 
         <label class="form-label mt-3">Password</label>
-        <input id="password" placeholder="••••••••" class="form-control" type="password" autocomplete="current-password"/>
+        <input id="password" placeholder="••••••••" class="form-control" type="password" autocomplete="current-password"
+               value="{{ $demo['password'] ?? '' }}"/>
 
         <button type="submit" class="btn btn-accent w-100 mt-4 py-2">Sign in</button>
     </form>
@@ -20,6 +34,12 @@
 
 
 <script>
+
+    function FillDemoLogin() {
+        document.getElementById('email').value = @json($demo['email'] ?? '');
+        document.getElementById('password').value = @json($demo['password'] ?? '');
+        document.getElementById('password').focus();
+    }
 
     async function SubmitLogin(event) {
         event.preventDefault();

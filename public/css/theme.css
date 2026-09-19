@@ -572,6 +572,25 @@ table.tidy tbody tr:hover td { background: #fafbfd; }
 .auth-foot { font-size: 12.5px; color: var(--ink-soft); margin-top: 16px; text-align: center; }
 .auth-foot a { color: var(--accent-deep); font-weight: 600; }
 
+.demo-box {
+    background: var(--accent-wash);
+    border: 1px solid #cdc7f4;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    font-size: 12.5px;
+}
+.demo-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    color: var(--accent-deep);
+    margin-bottom: 6px;
+}
+.demo-row { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; color: var(--ink-soft); }
+.demo-row code { color: var(--accent-deep); font-size: 12px; user-select: all; }
+
 /* --- Misc --------------------------------------------------------------- */
 
 .chart-holder { position: relative; height: 260px; }

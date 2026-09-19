@@ -131,6 +131,9 @@ class UserController extends Controller {
      */
     public function sendOTPCode(Request $request) {
         $email = $request->input('email');
+        if ($this->isDemoAccount($email)) {
+            return $this->demoPasswordLocked();
+        }
         $otp = rand(1000, 9999);
         $user = User::where('email', $email)->first();
         if (!$user) {
@@ -175,6 +178,9 @@ class UserController extends Controller {
     public function resetPassword(Request $request) {
         try {
             $email = $request->header('userEmail');
+            if ($this->isDemoAccount($email)) {
+                return $this->demoPasswordLocked();
+            }
             $newPassword = $request->input('newPassword');
             $user = User::where('email', $email)->first();
             if (!$user) {
@@ -240,6 +246,9 @@ class UserController extends Controller {
                     'message' => 'User not found',
                 ], 404);
             }
+            if ($request->filled('password') && $this->isDemoAccount($email)) {
+                return $this->demoPasswordLocked();
+            }
             $user->firstName = $firstName;
             $user->lastName = $lastName;
             $user->mobile = $mobile;
@@ -258,6 +267,21 @@ class UserController extends Controller {
                 'message' => 'Something went wrong',
             ], 500);
         }
+    }
+
+    /*
+     * The public demo account's password stays fixed for every visitor.
+     */
+    private function isDemoAccount(?string $email): bool {
+        $demo = config('app.demo.email');
+        return $demo && $email && strcasecmp($demo, $email) === 0;
+    }
+
+    private function demoPasswordLocked() {
+        return response()->json([
+            'message' => "The demo account's password can't be changed.",
+            'status'  => 'failed',
+        ], 403);
     }
 
 }

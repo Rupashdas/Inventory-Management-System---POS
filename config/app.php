@@ -19,6 +19,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public Demo Account
+    |--------------------------------------------------------------------------
+    |
+    | When DEMO_EMAIL is set, the sign-in page shows these credentials and
+    | fills them in, and the account's password can no longer be changed --
+    | otherwise the first visitor to reset it locks everyone else out.
+    |
+    */
+
+    'demo' => [
+        'email'    => env('DEMO_EMAIL'),
+        'password' => env('DEMO_PASSWORD'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

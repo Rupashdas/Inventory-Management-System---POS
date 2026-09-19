@@ -69,4 +69,57 @@ class AccountTest extends TestCase
         $this->assertSame('', $response->json('data.password'));
         $this->assertStringNotContainsString('$2y$', $response->getContent());
     }
+
+    public function test_the_sign_in_page_shows_and_prefills_the_demo_account(): void
+    {
+        config(['app.demo' => ['email' => 'demo@example.com', 'password' => 'demo1234']]);
+
+        $this->get('/userLogin')
+            ->assertOk()
+            ->assertSee('Demo account')
+            ->assertSee('value="demo@example.com"', false)
+            ->assertSee('value="demo1234"', false);
+    }
+
+    public function test_the_sign_in_page_has_no_demo_box_when_none_is_configured(): void
+    {
+        config(['app.demo' => ['email' => null, 'password' => null]]);
+
+        $this->get('/userLogin')->assertOk()->assertDontSee('Demo account');
+    }
+
+    /**
+     * On a public demo, one visitor resetting the password locks out the rest.
+     */
+    public function test_the_demo_account_password_cannot_be_changed(): void
+    {
+        $user = $this->makeUser('demo@example.com');
+        config(['app.demo' => ['email' => 'demo@example.com', 'password' => 'password']]);
+
+        $this->signedInAs($user)
+            ->postJson('/reset-password', ['newPassword' => 'hijacked'])
+            ->assertStatus(403);
+
+        $this->signedInAs($user)
+            ->postJson('/user-update', [
+                'firstName' => 'Demo', 'lastName' => 'User', 'mobile' => '0', 'password' => 'hijacked',
+            ])
+            ->assertStatus(403);
+
+        $this->postJson('/send-otp', ['email' => 'demo@example.com'])->assertStatus(403);
+
+        $this->assertTrue(Hash::check('password', $user->fresh()->password));
+    }
+
+    public function test_the_demo_account_can_still_edit_its_name(): void
+    {
+        $user = $this->makeUser('demo@example.com');
+        config(['app.demo' => ['email' => 'demo@example.com', 'password' => 'password']]);
+
+        $this->signedInAs($user)
+            ->postJson('/user-update', ['firstName' => 'Renamed', 'lastName' => 'User', 'mobile' => '0'])
+            ->assertOk();
+
+        $this->assertSame('Renamed', $user->fresh()->firstName);
+    }
 }
